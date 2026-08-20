@@ -56,7 +56,7 @@ export default function ManifestPortalMockup() {
           box-sizing: border-box;
         }
         .mf-root * { box-sizing: border-box; }
-        .mf-shell { max-width: 980px; margin: 0 auto; }
+        .mf-shell { max-width: 100%; margin: 0 auto; }
 
         .mf-header {
           display: flex;
@@ -218,14 +218,14 @@ export default function ManifestPortalMockup() {
       <div className="mf-shell">
         <header className="mf-header">
           <div className="mf-brand">
-            <div className="mf-mark">M</div>
+            <div className="mf-mark">PAT</div>
             <div className="mf-brand-text">
-              <h1>Manifest</h1>
+              <h1>Power Apps Tester</h1>
               <p>Power Platform test intake</p>
             </div>
           </div>
           <div className="mf-env" tabIndex={0}>
-            Contoso · UAT
+            TEST · UAT
             <ChevronDown size={14} />
           </div>
         </header>
