@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import SolutionUploader from "./components/SolutionUploader";
+import TestCases from "./components/TestCases";
 import {
   CheckCircle2,
   AlertCircle,
@@ -15,6 +16,8 @@ import {
 } from "lucide-react";
 
 export default function ManifestPortalMockup() {
+  const [activeTab, setActiveTab] = useState("setup"); // "setup" | "testcases"
+
   const connections = [
     { name: "SharePoint", icon: Folder, status: "connected" },
     { name: "Dataverse", icon: Database, status: "connected" },
@@ -82,6 +85,22 @@ export default function ManifestPortalMockup() {
         }
         .mf-env:hover { border-color: var(--accent-dim); color: var(--text); }
         .mf-env:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+        .mf-tabs {
+          display: flex; gap: 4px;
+          background: var(--panel); border: 1px solid var(--border-soft);
+          border-radius: 9px; padding: 4px; margin-bottom: 20px;
+          width: fit-content;
+        }
+        .mf-tab {
+          font-family: var(--sans); font-size: 13px; font-weight: 500;
+          color: var(--text-dim); background: transparent; border: none;
+          padding: 8px 16px; border-radius: 6px; cursor: pointer;
+          transition: background 0.15s ease, color 0.15s ease;
+        }
+        .mf-tab:hover { color: var(--text); }
+        .mf-tab.active { background: var(--accent-dim); color: var(--text); }
+        .mf-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
         .mf-grid {
           display: grid;
@@ -189,6 +208,11 @@ export default function ManifestPortalMockup() {
           font-size: 13.5px; font-weight: 500; padding: 10px 18px; border-radius: 8px;
           border: none; cursor: not-allowed;
         }
+        .mf-cta-active {
+          background: var(--accent); color: #0d121d; cursor: pointer;
+        }
+        .mf-cta-active:hover { background: #6ba8ff; }
+        .mf-cta-active:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
       `}</style>
 
       <div className="mf-shell">
@@ -206,101 +230,126 @@ export default function ManifestPortalMockup() {
           </div>
         </header>
 
-        <div className="mf-grid">
-          {/* Left column: upload + manifest scan */}
-          <div className="mf-card">
-            <p className="mf-step-label">STEP 01</p>
-            <h2 className="mf-card-title">Solution package</h2>
-
-            <SolutionUploader onParsed={(result) => console.log("Parsed solution:", result)} />
-            <p className="mf-hint">
-              export as managed or unmanaged from make.powerapps.com
-            </p>
-          </div>
-
-          {/* Right column: data source connections */}
-          <div className="mf-card">
-            <p className="mf-step-label">STEP 02</p>
-            <h2 className="mf-card-title">Data sources</h2>
-
-            <div className="mf-conn-grid">
-              {connections.map((c) => {
-                const Icon = c.icon;
-                const connected = c.status === "connected";
-                return (
-                  <div className="mf-conn-card" key={c.name}>
-                    <div className="mf-conn-top">
-                      <div className="mf-conn-icon">
-                        <Icon size={15} />
-                      </div>
-                      {connected ? (
-                        <CheckCircle2 size={15} color="#38d9a9" />
-                      ) : (
-                        <Circle size={15} color="#5b6580" />
-                      )}
-                    </div>
-                    <p className="mf-conn-name">{c.name}</p>
-                    {connected ? (
-                      <span className="mf-pill connected">connected</span>
-                    ) : (
-                      <>
-                        <span className="mf-pill disconnected">not connected</span>
-                        <button className="mf-connect-btn">Connect</button>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
-
-              <div className="mf-mysql-card">
-                <div className="mf-conn-top">
-                  <div className="mf-conn-icon">
-                    <HardDrive size={15} />
-                  </div>
-                  <AlertCircle size={15} color="#f2a94e" />
-                </div>
-                <p className="mf-conn-name">MySQL database</p>
-                <span className="mf-pill warn">needs credentials</span>
-
-                <div className="mf-form-row">
-                  <div className="mf-field">
-                    <label>Host</label>
-                    <input placeholder="db.internal.contoso.com" />
-                  </div>
-                  <div className="mf-field">
-                    <label>Database</label>
-                    <input placeholder="expense_prod" />
-                  </div>
-                  <div className="mf-field">
-                    <label>Username</label>
-                    <input placeholder="svc_qa_reader" />
-                  </div>
-                  <div className="mf-field">
-                    <label>Password</label>
-                    <input type="password" placeholder="••••••••••" />
-                  </div>
-                </div>
-                <button className="mf-verify-btn">
-                  <Lock size={12} />
-                  Verify connection
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mf-footer">
-          <div className="mf-progress">
-            <div className="mf-progress-track">
-              <div className="mf-progress-fill" />
-            </div>
-            <span className="mf-progress-text">3 of 5 connected</span>
-          </div>
-          <button className="mf-cta" disabled>
-            Continue to test cases
-            <ArrowRight size={15} />
+        <div className="mf-tabs">
+          <button
+            className={`mf-tab${activeTab === "setup" ? " active" : ""}`}
+            onClick={() => setActiveTab("setup")}
+          >
+            Setup
+          </button>
+          <button
+            className={`mf-tab${activeTab === "testcases" ? " active" : ""}`}
+            onClick={() => setActiveTab("testcases")}
+          >
+            QA Test cases
           </button>
         </div>
+
+        {activeTab === "testcases" ? (
+          <div className="mf-card">
+            <p className="mf-step-label">STEP 03</p>
+            <h2 className="mf-card-title">QA test cases</h2>
+            <TestCases />
+          </div>
+        ) : (
+          <>
+            <div className="mf-grid">
+              {/* Left column: upload + manifest scan */}
+              <div className="mf-card">
+                <p className="mf-step-label">STEP 01</p>
+                <h2 className="mf-card-title">Solution package</h2>
+
+                <SolutionUploader onParsed={(result) => console.log("Parsed solution:", result)} />
+                <p className="mf-hint">
+                  export as managed or unmanaged from make.powerapps.com
+                </p>
+              </div>
+
+              {/* Right column: data source connections */}
+              <div className="mf-card">
+                <p className="mf-step-label">STEP 02</p>
+                <h2 className="mf-card-title">Data sources</h2>
+
+                <div className="mf-conn-grid">
+                  {connections.map((c) => {
+                    const Icon = c.icon;
+                    const connected = c.status === "connected";
+                    return (
+                      <div className="mf-conn-card" key={c.name}>
+                        <div className="mf-conn-top">
+                          <div className="mf-conn-icon">
+                            <Icon size={15} />
+                          </div>
+                          {connected ? (
+                            <CheckCircle2 size={15} color="#38d9a9" />
+                          ) : (
+                            <Circle size={15} color="#5b6580" />
+                          )}
+                        </div>
+                        <p className="mf-conn-name">{c.name}</p>
+                        {connected ? (
+                          <span className="mf-pill connected">connected</span>
+                        ) : (
+                          <>
+                            <span className="mf-pill disconnected">not connected</span>
+                            <button className="mf-connect-btn">Connect</button>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  <div className="mf-mysql-card">
+                    <div className="mf-conn-top">
+                      <div className="mf-conn-icon">
+                        <HardDrive size={15} />
+                      </div>
+                      <AlertCircle size={15} color="#f2a94e" />
+                    </div>
+                    <p className="mf-conn-name">MySQL database</p>
+                    <span className="mf-pill warn">needs credentials</span>
+
+                    <div className="mf-form-row">
+                      <div className="mf-field">
+                        <label>Host</label>
+                        <input placeholder="db.internal.contoso.com" />
+                      </div>
+                      <div className="mf-field">
+                        <label>Database</label>
+                        <input placeholder="expense_prod" />
+                      </div>
+                      <div className="mf-field">
+                        <label>Username</label>
+                        <input placeholder="svc_qa_reader" />
+                      </div>
+                      <div className="mf-field">
+                        <label>Password</label>
+                        <input type="password" placeholder="••••••••••" />
+                      </div>
+                    </div>
+                    <button className="mf-verify-btn">
+                      <Lock size={12} />
+                      Verify connection
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mf-footer">
+              <div className="mf-progress">
+                <div className="mf-progress-track">
+                  <div className="mf-progress-fill" />
+                </div>
+                <span className="mf-progress-text">3 of 5 connected</span>
+              </div>
+              <button className="mf-cta mf-cta-active" onClick={() => setActiveTab("testcases")}>
+                Continue to test cases
+                <ArrowRight size={15} />
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
