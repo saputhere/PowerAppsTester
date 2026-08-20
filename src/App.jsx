@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
+import SolutionUploader from "./components/SolutionUploader";
 import {
-  UploadCloud,
   CheckCircle2,
   AlertCircle,
   Circle,
@@ -15,16 +15,6 @@ import {
 } from "lucide-react";
 
 export default function ManifestPortalMockup() {
-  const [dragActive, setDragActive] = useState(false);
-
-  const manifestLines = [
-    { text: "customizations.xml", meta: "solution manifest" },
-    { text: "ExpenseTracker.msapp", meta: "canvas app" },
-    { text: "ApproveExpense.json", meta: "flow" },
-    { text: "NotifyManager.json", meta: "flow" },
-    { text: "3 tables", meta: "Dataverse entities" },
-  ];
-
   const connections = [
     { name: "SharePoint", icon: Folder, status: "connected" },
     { name: "Dataverse", icon: Database, status: "connected" },
@@ -117,66 +107,10 @@ export default function ManifestPortalMockup() {
         }
         .mf-card-title { font-size: 15px; font-weight: 600; margin: 0 0 16px; }
 
-        .mf-dropzone {
-          border: 1.5px dashed var(--border);
-          border-radius: 10px;
-          padding: 30px 20px;
-          text-align: center;
-          transition: border-color 0.15s ease, background 0.15s ease;
-          cursor: pointer;
-        }
-        .mf-dropzone.active { border-color: var(--accent); background: rgba(91, 157, 255, 0.06); }
-        .mf-dropzone:hover { border-color: var(--accent-dim); }
-        .mf-dropzone:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-        .mf-dropzone svg { color: var(--text-faint); margin-bottom: 10px; }
-        .mf-dropzone .primary { font-size: 14px; font-weight: 500; margin: 0 0 3px; }
-        .mf-dropzone .secondary { font-size: 12.5px; color: var(--text-dim); margin: 0; }
         .mf-hint {
           font-size: 11.5px; color: var(--text-faint); margin: 10px 2px 0;
           font-family: var(--mono);
         }
-
-        .mf-scan {
-          margin-top: 18px;
-          background: #0a0e17;
-          border: 1px solid var(--border-soft);
-          border-radius: 9px;
-          padding: 14px 16px;
-        }
-        .mf-scan-title {
-          font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em;
-          color: var(--text-faint); margin: 0 0 10px; text-transform: uppercase;
-        }
-        .mf-scan-line {
-          display: flex; align-items: baseline; justify-content: space-between;
-          font-family: var(--mono); font-size: 12.5px; padding: 4px 0;
-          border-bottom: 1px solid #141b28;
-          opacity: 0; animation: mf-reveal 0.4s ease forwards;
-        }
-        .mf-scan-line:last-child { border-bottom: none; }
-        .mf-scan-line .fname { color: var(--text); }
-        .mf-scan-line .fmeta { color: var(--text-faint); font-size: 11px; }
-        .mf-scan-line .ok { color: var(--ok); margin-left: 10px; }
-        @media (prefers-reduced-motion: no-preference) {
-          .mf-scan-line:nth-child(1) { animation-delay: 0.1s; }
-          .mf-scan-line:nth-child(2) { animation-delay: 0.25s; }
-          .mf-scan-line:nth-child(3) { animation-delay: 0.4s; }
-          .mf-scan-line:nth-child(4) { animation-delay: 0.55s; }
-          .mf-scan-line:nth-child(5) { animation-delay: 0.7s; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .mf-scan-line { opacity: 1; animation: none; }
-        }
-        @keyframes mf-reveal { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
-
-        .mf-cursor {
-          display: inline-block; width: 6px; height: 12px; background: var(--accent);
-          margin-left: 2px; vertical-align: middle;
-        }
-        @media (prefers-reduced-motion: no-preference) {
-          .mf-cursor { animation: mf-blink 1s steps(1) infinite; }
-        }
-        @keyframes mf-blink { 50% { opacity: 0; } }
 
         .mf-conn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         @media (max-width: 420px) { .mf-conn-grid { grid-template-columns: 1fr; } }
@@ -278,36 +212,10 @@ export default function ManifestPortalMockup() {
             <p className="mf-step-label">STEP 01</p>
             <h2 className="mf-card-title">Solution package</h2>
 
-            <div
-              className={`mf-dropzone${dragActive ? " active" : ""}`}
-              tabIndex={0}
-              onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
-              onDragLeave={() => setDragActive(false)}
-              onDrop={(e) => { e.preventDefault(); setDragActive(false); }}
-            >
-              <UploadCloud size={26} />
-              <p className="primary">Drop your solution .zip here</p>
-              <p className="secondary">or browse files</p>
-            </div>
+            <SolutionUploader onParsed={(result) => console.log("Parsed solution:", result)} />
             <p className="mf-hint">
               export as managed or unmanaged from make.powerapps.com
             </p>
-
-            <div className="mf-scan">
-              <p className="mf-scan-title">Manifest scan</p>
-              {manifestLines.map((line, i) => (
-                <div className="mf-scan-line" key={i}>
-                  <span>
-                    <span className="fname">{line.text}</span>{" "}
-                    <span className="fmeta">— {line.meta}</span>
-                  </span>
-                  <CheckCircle2 size={13} className="ok" />
-                </div>
-              ))}
-              <div style={{ paddingTop: 8 }}>
-                <span className="mf-cursor" />
-              </div>
-            </div>
           </div>
 
           {/* Right column: data source connections */}
